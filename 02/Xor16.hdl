@@ -1,0 +1,13 @@
+CHIP Xor16 {
+    IN  
+        a[16], b[16];  // 16-bit inputs        
+    OUT 
+        out[16]; // 16-bit output
+
+    PARTS:
+    Not16(in = a, out = notx);
+    Not16(in = b, out = noty);
+    And16(a = notx, b = b, out = outa);
+    And16(a = a, b = noty, out = outb);
+    Or16(a = outa, b = outb , out = out);
+}
