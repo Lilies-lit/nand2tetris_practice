@@ -166,7 +166,7 @@ string Aproc(string str, map<string, int> &variable, set<string> &variable_set, 
         }
     }
 
-    if(A >= BIN15_MAX)
+    if(A > BIN15_MAX)
         return "";
     return "0" + IntToBinstr(A, 15);
 }
@@ -337,6 +337,7 @@ int main(int argc, char *argv[]) {
         if(str[0] == '@') { // A
             outputline = Aproc(str, variable, variable_set, valuecount);
             if(outputline == "") { // Error
+                cout << "str = " << str << endl;
                 cout << "syntax error(A code)" << endl;
                 return 0;
             }
