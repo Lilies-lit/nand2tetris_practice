@@ -5,7 +5,6 @@
 #include <set>
 #include <string>
 #include <vector>
-
 using namespace std;
 #define SIN(x, S) (S.count(x) != 0)
 // 16-bit Hack assembly
