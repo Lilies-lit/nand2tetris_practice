@@ -226,10 +226,12 @@ void variable_init(map<string, int> &variable, set<string> &variable_set){
     variable["LCL"] = 1;
     variable["ARG"] = 2;
     variable["THIS"] = 3;
+    variable["THAT"] = 4;
     variable_set.insert("SP");
     variable_set.insert("LCL");
     variable_set.insert("ARG");
     variable_set.insert("THIS");
+    variable_set.insert("THAT");
 }
 
 string Cproc(string deststr, string compstr, string jumpstr) {
