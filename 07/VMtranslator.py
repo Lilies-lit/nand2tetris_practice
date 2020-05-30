@@ -5,9 +5,6 @@ import VMconstnum as c
 import VMcodewriter
 
 def main():
-    print('Run')
-
-
     args = sys.argv
     outfileName = "a.asm"
     Vnum = 0
@@ -33,9 +30,11 @@ def main():
 
     while line:
         str = line.strip()
-        print(str)
         cmd = VMparser.parse(str)
-        if (cmd == -1):
+        if cmd == 0:
+            line = f.readline()
+            continue
+        elif cmd == -1:
             print('syntax error')
             o.close()
             f.close() 

@@ -1,7 +1,14 @@
 import VMconstnum as c
 
+def commentout(str):
+    str = str.split("//")[0]
+    return str
+
 def parse(str):
+    str = commentout(str)
     cmd = str.split()
+    if len(cmd) == 0:
+        return 0 # empty
     if len(cmd) == 1:
         if cmd[0] == c.C1[c.C_ADD]:
             return [c.C_ADD]
