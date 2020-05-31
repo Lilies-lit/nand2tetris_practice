@@ -1,0 +1,6 @@
+push local 0
+push constant 2
+add
+pop pointer 1
+push constant 19
+pop that 0
