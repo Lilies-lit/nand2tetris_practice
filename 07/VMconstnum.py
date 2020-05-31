@@ -25,6 +25,9 @@ C_POINTER = 5
 C_TEMP = 6
 C_STATIC = 7
 
+C_POINTERBASE = 3
+C_TEMPBASE = 5
+
 C1 = ["push","pop","label","goto","if","function","return","call",
       "add","sub","neg","eq","gt","lt","and","or","not"]
 

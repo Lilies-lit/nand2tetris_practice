@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import VMparser
-import VMconstnum as c
+from VMconstnum import *
 import VMcodewriter
 
 def main():
@@ -30,7 +30,9 @@ def main():
 
     while line:
         str = line.strip()
+        print(str)
         cmd = VMparser.parse(str)
+        print(cmd)
         if cmd == 0:
             line = f.readline()
             continue
@@ -39,8 +41,6 @@ def main():
             o.close()
             f.close() 
             return 1
-
-        print(cmd)
 
         [Vnum, Jnum] = VMcodewriter.writecmd(cmd, o, Vnum, Jnum)
         line = f.readline()

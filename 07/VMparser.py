@@ -16,18 +16,27 @@ def parse(str):
             return [c.C_SUB]
         elif cmd[0] == c.C1[c.C_EQ]:
             return [c.C_EQ]
-        elif cmd[0] == c.C1[c.C_EQ]:
-            return [c.C_EQ]
         elif cmd[0] == c.C1[c.C_GT]:
             return [c.C_GT]
         elif cmd[0] == c.C1[c.C_LT]:
             return [c.C_LT]
-            
+        elif cmd[0] == c.C1[c.C_NEG]:
+            return [c.C_NEG]
+        elif cmd[0] == c.C1[c.C_OR]:
+            return [c.C_OR]
+        elif cmd[0] == c.C1[c.C_AND]:
+            return [c.C_AND]
+        elif cmd[0] == c.C1[c.C_NOT]:
+            return [c.C_NOT]
+
     if len(cmd) == 2:
         pass
     if len(cmd) == 3:
-        if cmd[0] == c.C1[c.C_PUSH]:
-            x = c.C_PUSH
+        if cmd[0] in {c.C1[c.C_PUSH], c.C1[c.C_POP]}:
+            if cmd[0] == c.C1[c.C_PUSH]:
+                x = c.C_PUSH
+            else:
+                x = c.C_POP
             try:
                 z = int(cmd[2])
             except ValueError:
