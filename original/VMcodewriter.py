@@ -65,7 +65,7 @@ def write_pop(cmd1, x, o):
         o.write("A=A+1\n")
     o.write("M=D\n")
 
-def write_pushpt(cmd1, x, o): #BUG?
+def write_pushpt(cmd1, x, o):
     if cmd1 == C_POINTER:
         o.write("@3\n")
     elif cmd1 == C_TEMP:
@@ -81,7 +81,7 @@ def write_pushpt(cmd1, x, o): #BUG?
     o.write(sp)
     o.write("M=M+1\n")
 
-def write_poppt(cmd1, x, o): #BUG?
+def write_poppt(cmd1, x, o):
     o.write(sp)
     o.write("M=M-1\n")
     o.write("A=M\n")
@@ -92,6 +92,27 @@ def write_poppt(cmd1, x, o): #BUG?
         o.write("@5\n")
     for i in range(x):
         o.write("A=A+1\n")
+    o.write("M=D\n")
+
+def write_pushstatic(x, o):
+    fname = o.name
+    fname = fname.split("/")[-1]
+    o.write("@" + fname + "." + str(x) + "\n") # @filename.vm.x
+    o.write("D=M\n")
+    o.write(sp)
+    o.write("A=M\n")
+    o.write("M=D\n")
+    o.write(sp)
+    o.write("M=M+1\n")
+
+def write_popstatic(x, o):
+    fname = o.name
+    fname = fname.split("/")[-1]
+    o.write(sp)
+    o.write("M=M-1\n")
+    o.write("A=M\n")
+    o.write("D=M\n")
+    o.write("@" + fname + "." + str(x) + "\n")  # @filename.vm.x
     o.write("M=D\n")
 
 def write_op(cmd0, o):
@@ -180,11 +201,16 @@ def writecmd(cmd, o, Vnum, Jnum):
             write_push(cmd[1], cmd[2], o)
         elif cmd[1] in {C_POINTER, C_TEMP}:
             write_pushpt(cmd[1], cmd[2], o)
+        elif cmd[1] == C_STATIC:
+            write_pushstatic(cmd[2], o)
+
     elif cmd[0] == C_POP:
         if cmd[1] in {C_LOCAL,C_ARGUMENT,C_THIS,C_THAT}:
             write_pop(cmd[1], cmd[2], o)
         elif cmd[1] in {C_POINTER, C_TEMP}:
             write_poppt(cmd[1], cmd[2], o)
+        elif cmd[1] == C_STATIC:
+            write_popstatic(cmd[2], o)
 
     return [Vnum, Jnum]
 
