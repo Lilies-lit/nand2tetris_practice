@@ -1,9 +1,11 @@
 # nand2tetris_practice
 
-This Code is my answer to 'nand2tetris', and some original code.
+These codes are my answer to 'nand2tetris', and some original code.
 
---original part--
+--original directory--
 
-04 - hackasm.cpp
-
+06,07 - hackasm.cpp
 hack assembly (work similarly to the standard assembly of 'nand2tetris')
+
+08 -- VMtranslator.py, VMparser.py, VMcodewriter.py
+These translator specification is based on 'nand2tetris'.
