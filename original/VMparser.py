@@ -4,6 +4,16 @@ def commentout(str):
     str = str.split("//")[0]
     return str
 
+def isOKvarname(str):
+    # return 1 --> str is availale for variable name
+    if str == '':
+        return 0
+
+    if ('0' <= str[0] <= '9'):
+        return 0
+
+    return 1
+
 def parse(str):
     str = commentout(str)
     cmd = str.split()
@@ -30,7 +40,15 @@ def parse(str):
             return [C_NOT]
 
     if len(cmd) == 2:
-        pass
+        if cmd[0] == C1[C_LABEL] and isOKvarname(str[1]):
+            return [C_LABEL, cmd[1]]
+
+        if cmd[0] == C1[C_GOTO] and isOKvarname(str[1]):
+            return [C_GOTO, cmd[1]]
+            
+        if cmd[0] == C1[C_IFGOTO] and isOKvarname(str[1]):
+            return [C_IFGOTO, cmd[1]]
+
     if len(cmd) == 3:
         if cmd[0] in {C1[C_PUSH], C1[C_POP]}:
             if cmd[0] == C1[C_PUSH]:
@@ -48,4 +66,4 @@ def parse(str):
                 return -1
 
 
-    return -1 # argument num error
+    return -1 # parse error or argument error

@@ -42,7 +42,7 @@ def main():
             f.close() 
             return 1
 
-        [Vnum, Jnum] = VMcodewriter.writecmd(cmd, o, Vnum, Jnum)
+        Jnum = VMcodewriter.writecmd(cmd, o, Vnum, Jnum)
         line = f.readline()
 
     f.close()

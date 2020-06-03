@@ -15,6 +15,9 @@ C_LT = 13
 C_AND = 14
 C_OR = 15
 C_NOT = 16
+C_LABEL = 17
+C_GOTO = 18
+C_IFGOTO = 19
 
 C_LOCAL = 0
 C_ARGUMENT = 1
@@ -29,6 +32,6 @@ C_POINTERBASE = 3
 C_TEMPBASE = 5
 
 C1 = ["push","pop","label","goto","if","function","return","call",
-      "add","sub","neg","eq","gt","lt","and","or","not"]
+      "add","sub","neg","eq","gt","lt","and","or","not","label","goto","if-goto"]
 
 C2 = ["local","argument","this","that","constant","pointer","temp", "static"]

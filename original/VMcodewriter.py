@@ -16,6 +16,9 @@ def makeJ(Jnum):
     # @J0
     return '@J' + str(Jnum) + '\n'
 
+def makelabel(str):
+    return '(' + str + ')'
+
 def write_pushconst(x, o):
     o.write("@" + str(x) + "\n")
     o.write("D=A\n")
@@ -180,6 +183,18 @@ def write_eqgtlt(cmd0, o, Jnum):
     o.write(sp)
     o.write("M=M+1\n")
 
+def write_goto(varname, o):
+    o.write("@" + varname + "\n")
+    o.write("0;JMP\n")
+
+def write_ifgoto(varname, o):
+    o.write(sp)
+    o.write("M=M-1\n")
+    o.write("A=M\n")
+    o.write("D=M\n")
+    o.write("@" + varname + "\n")
+    o.write("D;JNE\n")
+
 
 def writecmd(cmd, o, Vnum, Jnum):
     if cmd[0] in {C_ADD,C_SUB,C_AND,C_OR}:
@@ -194,6 +209,16 @@ def writecmd(cmd, o, Vnum, Jnum):
     elif cmd[0] in {C_EQ,C_GT,C_LT}:
         write_eqgtlt(cmd[0], o, Jnum)
         Jnum += 2
+
+    elif cmd[0] == C_LABEL:
+        o.write(makelabel(cmd[1]) + "\n")
+    
+    elif cmd[0] == C_GOTO:
+        write_goto(cmd[1], o)
+
+    elif cmd[0] == C_IFGOTO:
+        write_ifgoto(cmd[1], o)
+
     elif cmd[0] == C_PUSH:
         if cmd[1] == C_CONSTANT:
             write_pushconst(cmd[2], o)
@@ -212,5 +237,5 @@ def writecmd(cmd, o, Vnum, Jnum):
         elif cmd[1] == C_STATIC:
             write_popstatic(cmd[2], o)
 
-    return [Vnum, Jnum]
+    return Jnum
 
