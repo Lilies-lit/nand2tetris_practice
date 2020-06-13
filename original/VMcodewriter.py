@@ -2,11 +2,19 @@ from VMconstnum import *
 
 sp = '@SP\n'
 
-def init(o):
+def init(pattern, o):
     o.write("@256\n")
     o.write("D=A\n")
     o.write(sp)
-    o.write("M=D\n")
+    o.write("M=D\n")  # SP <- 256
+    Jnum = 0
+    if pattern == 1:
+        #dir mode
+        write_call('Sys.init', 0, 0, o)
+        Jnum = 1
+        o.write("// init end //\n")
+
+    return Jnum
 
 def makeJl(Jnum):
     #  (J0)
@@ -158,6 +166,7 @@ def write_neg(o):
     o.write("M=M+1\n")
 
 def write_eqgtlt(cmd0, o, Jnum):
+    # Jnum += 2
     write_op(C_SUB, o)
     o.write(sp)
     o.write("M=M-1\n")
@@ -195,8 +204,92 @@ def write_ifgoto(varname, o):
     o.write("@" + varname + "\n")
     o.write("D;JNE\n")
 
+def write_call(f, n, Jnum, o):
+    calllabel = f + "_RETADDRESS_J" + str(Jnum)
+    o.write("@" + calllabel + "\n")
+    o.write("D=A\n")
+    o.write(sp)
+    o.write("A=M\n")
+    o.write("M=D\n")
+    o.write(sp)
+    o.write("M=M+1\n")
+    '''
+    write_push(C_LOCAL, 0, o)
+    write_push(C_ARGUMENT, 0, o)
+    write_push(C_THIS, 0, o)
+    write_push(C_THAT, 0, o)
+    '''
+    for i in {1,2,3,4}:
+        o.write("@" + str(i) + "\n")
+        o.write("D=M\n")
+        o.write(sp)
+        o.write("A=M\n")
+        o.write("M=D\n")
+        o.write(sp)
+        o.write("M=M+1\n")
 
-def writecmd(cmd, o, Vnum, Jnum):
+    o.write(sp)
+    o.write("D=M\n")
+    o.write("@5\n")
+    o.write("D=D-A\n")
+    for i in range(n):
+        o.write("D=D-1\n")
+    o.write("@ARG\n")
+    o.write("M=D\n")
+    o.write(sp)
+    o.write("D=M\n")
+    o.write("@LCL\n")
+    o.write("M=D\n")
+    write_goto(f, o)
+    o.write(makelabel(calllabel) + "\n")
+
+def write_function(f, k, o):
+    o.write("(" + f + ")\n")
+    for i in range(k):
+        write_pushconst(0, o)
+
+def write_return(o):
+    o.write("@LCL\n")
+    o.write("D=M\n")
+    o.write("@5\n")
+    o.write("D=D-A\n")
+    o.write("@R15\n")
+    o.write("M=D\n")
+    o.write("A=M\n")
+    o.write("D=M\n")
+    o.write("@R13\n")
+    o.write("M=D\n")
+
+    write_pop(C_ARGUMENT, 0, o)
+
+    o.write("@ARG\n")
+    o.write("A=M\n")
+    o.write("A=A+1\n")
+    o.write("D=A\n")
+    o.write(sp)
+    o.write("M=D\n")
+    
+    for i in range(4):
+        o.write("@R15\n")
+        o.write("M=M+1\n")
+        o.write("A=M\n")
+        o.write("D=M\n")
+        if i == 0:
+            o.write("@LCL\n")
+        if i == 1:
+            o.write("@ARG\n")
+        if i == 2:
+            o.write("@THIS\n")
+        if i == 3:
+            o.write("@THAT\n")
+        o.write("M=D\n")
+    
+    o.write("@R13\n")
+    o.write("A=M\n")
+    o.write("0;JMP\n")
+
+
+def writecmd(cmd, o, Jnum):
     if cmd[0] in {C_ADD,C_SUB,C_AND,C_OR}:
         write_op(cmd[0], o)
         
@@ -236,6 +329,16 @@ def writecmd(cmd, o, Vnum, Jnum):
             write_poppt(cmd[1], cmd[2], o)
         elif cmd[1] == C_STATIC:
             write_popstatic(cmd[2], o)
+
+    elif cmd[0] == C_FUNCTION:
+        write_function(cmd[1], cmd[2], o)
+
+    elif cmd[0] == C_RETURN:
+        write_return(o)
+
+    elif cmd[0] == C_CALL:
+        write_call(cmd[1], cmd[2], Jnum, o)
+        Jnum += 1
 
     return Jnum
 

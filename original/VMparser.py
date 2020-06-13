@@ -39,6 +39,10 @@ def parse(str):
         elif cmd[0] == C1[C_NOT]:
             return [C_NOT]
 
+        elif cmd[0] == C1[C_RETURN]:
+            return [C_RETURN]
+
+
     if len(cmd) == 2:
         if cmd[0] == C1[C_LABEL] and isOKvarname(str[1]):
             return [C_LABEL, cmd[1]]
@@ -64,6 +68,16 @@ def parse(str):
                 return [x,y,z]
             else:
                 return -1
-
+        
+        elif cmd[0] == C1[C_FUNCTION] or cmd[0] == C1[C_CALL]:
+            try:
+                k = int(cmd[2])
+            except ValueError:
+                return -1
+            
+            if cmd[0] == C1[C_FUNCTION]:
+                return [C_FUNCTION, cmd[1], k]
+            else:
+                return [C_CALL, cmd[1], k]
 
     return -1 # parse error or argument error

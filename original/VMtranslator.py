@@ -3,49 +3,77 @@ import sys
 import VMparser
 from VMconstnum import *
 import VMcodewriter
+import glob
+import os
 
 def main():
     args = sys.argv
-    outfileName = "a.asm"
-    Vnum = 0
+    pattern = 0 # FileMode = 0, dirMode = 1
+    outFileName = "a.asm"
+    inFileNameList = []
+
     Jnum = 0
+
     if (len(args) == 3):
-        infileName = args[1]
-        outfileName = args[2]
+        inFileName = args[1]
+        outFileName = args[2]
     elif(len(args) == 2):
-        infileName = args[1]
+        inFileName = args[1]
     else:
         print('arguments error')
         return 1
 
     try:
-        f = open(infileName, 'r')
-        o = open(outfileName, 'w')
+        o = open(outFileName, 'w')
     except OSError:
-        print("file can't open")
+        print("file can't open(output)")
         return 1
 
-    line = f.readline()
-    VMcodewriter.init(o) # SP <- 256
+    #Select pattern
+    if os.path.isdir(inFileName) == True:
+        dirname = inFileName
+        pattern = 1
+        inFileNameList = glob.glob(dirname + '*.vm')
+        print(dirname)
+    else:
+        inFileNameList = [inFileName]
+        pattern = 0
 
-    while line:
-        str = line.strip()
-        print(str)
-        cmd = VMparser.parse(str)
-        print(cmd)
-        if cmd == 0:
-            line = f.readline()
-            continue
-        elif cmd == -1:
-            print('syntax error')
-            o.close()
-            f.close() 
+    Jnum = VMcodewriter.init(pattern, o)
+
+    print(inFileNameList)
+
+
+    for inFileName in inFileNameList:
+        try:
+            f = open(inFileName, 'r')
+        except OSError:
+            print("file can't open")
             return 1
 
-        Jnum = VMcodewriter.writecmd(cmd, o, Vnum, Jnum)
         line = f.readline()
 
-    f.close()
-    o.close()
+        while line:
+            str = line.strip()
+            print(str)
+            
+            cmd = VMparser.parse(str)
+            print(cmd)
+            if cmd == 0:
+                line = f.readline()
+                continue
+            elif cmd == -1:
+                print('syntax error')
+                o.close()
+                f.close() 
+                return 1
 
+            Jnum = VMcodewriter.writecmd(cmd, o, Jnum)
+
+            line = f.readline()
+            # o.write("// ----- " + str + "\n")
+        f.close()
+
+
+    o.close()
 main()
