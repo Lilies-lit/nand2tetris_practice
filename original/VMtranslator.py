@@ -56,7 +56,7 @@ def main():
         while line:
             str = line.strip()
             print(str)
-            
+            o.write("// ----- " + str + "\n")
             cmd = VMparser.parse(str)
             print(cmd)
             if cmd == 0:
@@ -68,10 +68,10 @@ def main():
                 f.close() 
                 return 1
 
-            Jnum = VMcodewriter.writecmd(cmd, o, Jnum)
+            Jnum = VMcodewriter.writecmd(cmd, o, f, Jnum)
 
             line = f.readline()
-            # o.write("// ----- " + str + "\n")
+            
         f.close()
 
 

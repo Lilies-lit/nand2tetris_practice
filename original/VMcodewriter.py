@@ -105,8 +105,8 @@ def write_poppt(cmd1, x, o):
         o.write("A=A+1\n")
     o.write("M=D\n")
 
-def write_pushstatic(x, o):
-    fname = o.name
+def write_pushstatic(x, o, f):
+    fname = f.name
     fname = fname.split("/")[-1]
     o.write("@" + fname + "." + str(x) + "\n") # @filename.vm.x
     o.write("D=M\n")
@@ -116,8 +116,8 @@ def write_pushstatic(x, o):
     o.write(sp)
     o.write("M=M+1\n")
 
-def write_popstatic(x, o):
-    fname = o.name
+def write_popstatic(x, o, f):
+    fname = f.name
     fname = fname.split("/")[-1]
     o.write(sp)
     o.write("M=M-1\n")
@@ -289,7 +289,7 @@ def write_return(o):
     o.write("0;JMP\n")
 
 
-def writecmd(cmd, o, Jnum):
+def writecmd(cmd, o, f, Jnum):
     if cmd[0] in {C_ADD,C_SUB,C_AND,C_OR}:
         write_op(cmd[0], o)
         
@@ -320,7 +320,7 @@ def writecmd(cmd, o, Jnum):
         elif cmd[1] in {C_POINTER, C_TEMP}:
             write_pushpt(cmd[1], cmd[2], o)
         elif cmd[1] == C_STATIC:
-            write_pushstatic(cmd[2], o)
+            write_pushstatic(cmd[2], o, f)
 
     elif cmd[0] == C_POP:
         if cmd[1] in {C_LOCAL,C_ARGUMENT,C_THIS,C_THAT}:
@@ -328,7 +328,7 @@ def writecmd(cmd, o, Jnum):
         elif cmd[1] in {C_POINTER, C_TEMP}:
             write_poppt(cmd[1], cmd[2], o)
         elif cmd[1] == C_STATIC:
-            write_popstatic(cmd[2], o)
+            write_popstatic(cmd[2], o, f)
 
     elif cmd[0] == C_FUNCTION:
         write_function(cmd[1], cmd[2], o)
