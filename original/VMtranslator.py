@@ -56,7 +56,7 @@ def main():
         while line:
             str = line.strip()
             print(str)
-            o.write("// ----- " + str + "\n")
+            # o.write("// ----- " + str + "\n")
             cmd = VMparser.parse(str)
             print(cmd)
             if cmd == 0:
