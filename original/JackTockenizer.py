@@ -34,7 +34,31 @@ def readword(word):
         return [3, word] # identifier
 
 
+def writetoken(token):
+    tokentype = token[0]
+    tokenname = token[1]
+    ret = ''
 
+    if tokentype == 1:
+        ret = "<keyword> " + KEYWORD[tokenname] + " </keyword>" 
+    elif tokentype == 2:
+        if tokenname == 13: # &
+            ret = "<symbol> " + "&amp" + " </symbol>" 
+        elif tokenname == 15: # <
+            ret = "<symbol> " + "&lt" + " </symbol>" 
+        elif tokenname == 16: # >
+            ret = "<symbol> " + "&gt" + " </symbol>" 
+        else:
+            ret = "<symbol> " + SYMBOL[tokenname] + " </symbol>"
+            
+    elif tokentype == 3:
+        ret = "<identifier> " + tokenname + " </identifier>"
+    elif tokentype == 4:
+        ret = "<integerConstant> " + str(tokenname) +" </integerConstant>"
+    elif tokentype == 5:
+        ret = "<stringConstant> " + tokenname + " </stringConstant>"
+
+    return ret
     
 
 

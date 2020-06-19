@@ -14,6 +14,7 @@ def main():
     print(KEYWORD)
     print(SYMBOL)
     args = sys.argv
+    outFileNameT = "aT.xml"
     outFileName = "a.xml"
 
     if (len(args) == 3):
@@ -26,7 +27,7 @@ def main():
         return 1
 
     try:
-        o = open(outFileName, 'w')
+        o = open(outFileNameT, 'w')
     except OSError:
         print("file can't open(output)")
         return 1
@@ -37,17 +38,20 @@ def main():
         print("file can't open")
         return 1
 
+    # tockenizer
+
     line = f.readline()
     Wordsqueue = []
     o.write("<tokens>\n")
     while line:
         s = line.strip()
         s = s.split('//')[0]
+        s = s.split('/**')[0]
         print(s)
         if len(s) >= 2 and s[0] == '/' and s[1] == '/':
             continue
 
-        news = (re.findall('\".*\"|\{|\}|\(|\)|;|\+|-|\*|/|=|\.|\,|\w*',s))
+        news = (re.findall('\".*\"|\{|\}|\(|\)|\[|\]|\||;|\+|-|\*|/|=|\.|\,|\w*',s))
         news = filter(lambda X: X != '', news)
         Wordsqueue.extend(news)
         line = f.readline()
@@ -55,7 +59,8 @@ def main():
 
     print(Wordsqueue)
 
-    Tokenlist = []    
+    Tokenlist = []
+
     for word in Wordsqueue:
         E = JackTockenizer.readword(word)
         if E == -1 or E == -2:
@@ -64,16 +69,22 @@ def main():
 
         Tokenlist.append(E)
 
-    print(Tokenlist)
     f.close()
 
     for token in Tokenlist:
-        outline = JackComp.writetoken(token)
+        outline = JackTockenizer.writetoken(token)
         outline += "\n"
         o.write(outline)
 
     o.write("</tokens>\n")
     o.close()
+
+    # parser
+    Tokenlist.append(['END',0])
+
+    print(Tokenlist)
+    JackComp.compileFile(Tokenlist, outFileName)
+
 
 
 main()
