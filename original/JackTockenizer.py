@@ -43,11 +43,11 @@ def writetoken(token):
         ret = "<keyword> " + KEYWORD[tokenname] + " </keyword>" 
     elif tokentype == 2:
         if tokenname == 13: # &
-            ret = "<symbol> " + "&amp" + " </symbol>" 
+            ret = "<symbol> " + "&amp;" + " </symbol>" 
         elif tokenname == 15: # <
-            ret = "<symbol> " + "&lt" + " </symbol>" 
+            ret = "<symbol> " + "&lt;" + " </symbol>" 
         elif tokenname == 16: # >
-            ret = "<symbol> " + "&gt" + " </symbol>" 
+            ret = "<symbol> " + "&gt;" + " </symbol>" 
         else:
             ret = "<symbol> " + SYMBOL[tokenname] + " </symbol>"
             

@@ -3,6 +3,7 @@ import JackTockenizer as Tokenizer
 
 o = 0
 Data = 0
+Tabnum = 2
 
 '''
 pcはTokenlist(数値化済)の何個目まで呼んだかを表す．
@@ -13,8 +14,8 @@ subroutine呼び出し直前で，その文法の先頭のアドレスをさし�
 
 def maketab(Tab):
     S = ''
-    for i in range(Tab):
-        S += '    '
+    for i in range(Tab * Tabnum):
+        S += ' '
     return S
 
 def writetab(S, Tab):
@@ -44,7 +45,6 @@ def compileFile(inData, outFileName):
 
     while(1):
         T = Data[pc]
-        print(T)
         if T[0] == C_KEYWORD and T[1] == C_CLASS:
             pc = compileClass(pc, Tab)
         elif T[0] == 'END':
@@ -67,7 +67,6 @@ def compileClass(pc, Tab):
 
     while(1):
         T = Data[pc]
-
         if T[0] == C_SYMBOL and T[1] == 1: #}
             break
         
@@ -412,9 +411,81 @@ def compileTerm(pc, Tab):
     writetab('<term>', Tab)
     Tab += 1
 
-    wtoken(Data[pc], Tab) #TEST
-    pc += 1
+    T = Data[pc]
+    if T[0] == C_INTVAL:
+        wtoken(Data[pc], Tab)
+        pc += 1
 
+    elif T[0] == C_STRINGVAL:
+        wtoken(Data[pc], Tab)
+        pc += 1
+
+    elif T[0] == C_SYMBOL and T[1] == 2: #(
+        wtoken(Data[pc], Tab) #(
+        pc += 1
+
+        pc = compileExpression(pc, Tab)
+
+        wtoken(Data[pc], Tab) #)
+        pc += 1
+
+    elif T[0] == C_SYMBOL and T[1] in C_UNARYOP:
+        wtoken(Data[pc], Tab) #unaryOp
+        pc += 1
+
+        pc = compileTerm(pc, Tab)
+    
+    elif T[0] == C_KEYWORD and T[1] in C_KEYWORDCONSTANT:
+        wtoken(Data[pc], Tab) #keywordConstant
+        pc += 1
+
+    
+    elif T[0] == C_IDENTIFIER:
+        wtoken(Data[pc], Tab)
+        pc += 1
+
+        T = Data[pc]
+
+        if T[0] == C_SYMBOL and T[1] == 4: #[
+            #varName[ ]
+            wtoken(Data[pc], Tab) #[
+            pc += 1
+
+            pc = compileExpression(pc, Tab)
+
+            wtoken(Data[pc], Tab) #]
+            pc += 1
+
+        elif T[0] == C_SYMBOL and T[1] == 2: #(
+            #subroutineName( ...
+            wtoken(Data[pc], Tab) #(
+            pc += 1
+
+            pc = compileExpressionList(pc, Tab)
+
+            wtoken(Data[pc], Tab) #)
+            pc += 1
+
+        elif T[0] == C_SYMBOL and T[1] == C_DOT: # .
+            #(className | varName) . ...
+            wtoken(Data[pc], Tab) #.
+            pc += 1
+
+            wtoken(Data[pc], Tab) #subroutineName
+            pc += 1
+
+            wtoken(Data[pc], Tab) #(
+            pc += 1
+
+            pc = compileExpressionList(pc, Tab)
+
+            wtoken(Data[pc], Tab) #)
+            pc += 1
+
+    else:
+        return -1
+
+    
     Tab -= 1
     writetab('</term>', Tab)
     return pc
@@ -422,8 +493,37 @@ def compileTerm(pc, Tab):
 def compileExpressionList(pc, Tab):
     writetab('<expressionList>', Tab)
     Tab += 1
+    while(1):
+        flg = 0
+        T = Data[pc]
+        if T[0] == C_INTVAL:
+            flg = 1
 
-    # ToDo
+        if T[0] == C_STRINGVAL:
+            flg = 1
+
+        if T[0] == C_IDENTIFIER:
+            flg = 1
+        
+        if T[0] == C_SYMBOL and T[1] == 2: #(
+            flg = 1
+
+        if T[0] == C_SYMBOL and T[1] in C_UNARYOP:
+            flg = 1
+
+        if T[0] == C_KEYWORD and T[1] in C_KEYWORDCONSTANT:
+            flg = 1
+
+        if flg == False:
+            break
+
+        pc = compileExpression(pc, Tab)
+    
+        if not (Data[pc][0] == C_SYMBOL and Data[pc][1] == C_COMMA):
+            break
+
+        wtoken(Data[pc], Tab) # ,
+        pc += 1
 
     Tab -= 1
     writetab('</expressionList>', Tab)
@@ -440,6 +540,7 @@ def compileSubroutineCall(pc, Tab):
         pc += 1
         pc = compileExpressionList(pc, Tab)
         wtoken(Data[pc], Tab) # )
+        pc += 1
 
     #case 2 .
     elif T[0] == C_SYMBOL and T[1] == C_DOT:

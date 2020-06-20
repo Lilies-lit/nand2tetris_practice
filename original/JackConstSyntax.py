@@ -5,6 +5,7 @@ SYMBOL = ['{', '}', '(', ')', '[', ']', '.', ',', ';', '+', '-', '*', '/', '&', 
 NUMHEAD = ['0','1','2','3','4','5','6','7','8','9']
 
 C_KEYWORD = 1 #
+C_KEYWORDCONSTANT = {11,12,13,14}
 C_CLASS = 0
 C_STATIC = 5
 C_FIELD = 4
@@ -28,6 +29,7 @@ C_DOT = 6
 C_COMMA = 7
 C_SEMICOLON = 8
 C_OP = {9,10,11,12,13,14,15,16,17}
+C_UNARYOP = {10,18}
 
 C_IDENTIFIER = 3 #
 

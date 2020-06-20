@@ -14,7 +14,7 @@ def main():
     print(KEYWORD)
     print(SYMBOL)
     args = sys.argv
-    outFileNameT = "aT.xml"
+    outFileNameT = "TokenTemp.xml"
     outFileName = "a.xml"
 
     if (len(args) == 3):
@@ -33,9 +33,32 @@ def main():
         return 1
 
     try:
-        f = open(inFileName, 'r')
+        fin = open(inFileName, 'r')
     except OSError:
-        print("file can't open")
+        print("file can't open(input)")
+        return 1
+
+    Data = fin.read()
+    #erase
+    Data = re.sub('//(.*)' , '' , Data)
+    Data = re.sub('/\*(.|\n)*?\*/' , '' , Data)
+    fin.close()
+
+    try:
+        otemp = open('intemp.jack', 'w')
+    except OSError:
+        print("file can't open(output temp)")
+        return 1
+
+    #write temp
+    otemp.write(Data)
+
+    otemp.close()
+
+    try:
+        f = open('intemp.jack', 'r')
+    except OSError:
+        print("file can't open(input temp)")
         return 1
 
     # tockenizer
@@ -43,19 +66,14 @@ def main():
     line = f.readline()
     Wordsqueue = []
     o.write("<tokens>\n")
+
     while line:
         s = line.strip()
-        s = s.split('//')[0]
-        s = s.split('/**')[0]
         print(s)
-        if len(s) >= 2 and s[0] == '/' and s[1] == '/':
-            continue
-
-        news = (re.findall('\".*\"|\{|\}|\(|\)|\[|\]|\||;|\+|-|\*|/|=|\.|\,|\w*',s))
+        news = (re.findall('\".*\"|\<|\>|\{|\}|\(|\)|\[|\]|\||;|\+|-|\*|/|~|=|\.|\,|\w*',s))
         news = filter(lambda X: X != '', news)
         Wordsqueue.extend(news)
         line = f.readline()
-        
 
     print(Wordsqueue)
 
@@ -84,7 +102,5 @@ def main():
 
     print(Tokenlist)
     JackComp.compileFile(Tokenlist, outFileName)
-
-
 
 main()
